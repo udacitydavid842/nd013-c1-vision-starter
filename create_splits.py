@@ -17,6 +17,24 @@ def split(data_dir):
         - data_dir [str]: data directory, /mnt/data
     """
     # TODO: Implement function
+    files = [filename for filename in glob.glob(f'{data_dir}/*.tfrecord')]
+    
+    train_files, val_file, test_file = np.split(files, [int(.6*len(files)), int(.8*len(files))])
+    
+    train = os.path.join(data_dir, 'train')
+    os.makedirs(train, exist_ok=True)
+    for file in train_files:
+        shutil.move(file, train)
+    
+    val = os.path.join(data_dir, 'val')
+    os.makedirs(val, exist_ok=True)
+    for file in val_file:
+        shutil.move(file, val)
+    
+    test = os.path.join(data_dir, 'test')
+    os.makedirs(test, exist_ok=True)
+    for file in test_file:
+        shutil.move(file, test) 
     
 
 if __name__ == "__main__": 
