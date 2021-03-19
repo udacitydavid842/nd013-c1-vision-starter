@@ -20,7 +20,7 @@ def split(data_dir):
     # TODO: Implement function
     files = [filename for filename in glob.glob(f'{data_dir}/*.tfrecord')]
     
-    train_files, val_file, test_file = np.split(files, [int(.6*len(files)), int(.8*len(files))])
+    train_files, val_file, test_file = np.split(files, [int(.75*len(files)), int(.9*len(files))])
     
     train = os.path.join(data_dir, 'train')
     os.makedirs(train, exist_ok=True)
