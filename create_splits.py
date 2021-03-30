@@ -17,11 +17,13 @@ def split(data_dir):
     args:
         - data_dir [str]: data directory, /mnt/data
     """
-    # TODO: Implement function
+    # get data file names from data_dir path
     files = [filename for filename in glob.glob(f'{data_dir}/*.tfrecord')]
     
+    # spliting file names
     train_files, val_file, test_file = np.split(files, [int(.75*len(files)), int(.9*len(files))])
     
+    # create dirs and move data files into them
     train = os.path.join(data_dir, 'train')
     os.makedirs(train, exist_ok=True)
     for file in train_files:
