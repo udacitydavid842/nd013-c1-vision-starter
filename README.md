@@ -133,19 +133,66 @@ python inference_video.py -labelmap_path label_map.pbtxt --model_path training/e
 ### Project overview
 This section should contain a brief description of the project and what we are trying to achieve. Why is object detection such an important component of self driving car systems?
 
+In this project, we are building a model that would help a self driving car better predict and detect objects (cars, pedestriants and cyclits). 
+
+We are made available the waymo open dataset and we use 100 tf record files on which we would develop a model to train on then. Object detection systems are very important for self driving cars so that they can correctly determine which object surrounds them and make circulation more safe.
+
+At the end of this project, we you can create a video of the model's inferences for a tf record file. 
+
 ### Set up
 This section should contain a brief description of the steps to follow to run the code for this repository.
+To set up and run this project, we make sure we use a system equipped with nvidia gpu running with the lastest drivers, install tensorflow-2.3.0-gpu, python 3.6 for the basic setup. 
 
 ### Dataset
 #### Dataset analysis
 This section should contain a quantitative and qualitative description of the dataset. It should include images, charts and other visualizations.
+
+The provided data contains images with objects (cars, pedestriants and cyclists) and we have to annotate. We need to properly exploy the data such that we can know how to correctly split our data into training and validation sets so as to mininmize the test error bias. 
+
 #### Cross validation
 This section should detail the cross validation strategy and justify your approach.
+
+Here are dataset consists of 100 tfrecord files. We split them up into training, validation and testing sets. 
+
+We give our training set 75% of the data, 15% for validation and the remainng 10% for testing. This spliting is such that we have enough data for training as well as reserve data for test and validation. Since we have just 100 tfrecord files to deal with we need to minimize the test error and overfitting, thus we use 75% of the data for traning so that we can have 15% for cross validation which is a good number in this case.
 
 ### Training 
 #### Reference experiment
 This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
 
+I performed the training over a GPU with 8 cores thus I used a batch size of 8 and validation was run along side the training but over the avalable CPU cores. I first of all ran the training and validation based on the configurations without augmentation of the Restnet50 [pretrained model](http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz) and got the folowing results.
+
+![charts](charts)
+
+
 #### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
- 
+
+To improve on this model, The next experimet I ran was with augmetation by adding augmentatinos to the data such as, converting the image to gray scale with a probability of 2%, setting the contrast of the image with a min_delta of 0.6 and a max_delta of 1.0, again, I adjusted the brightness of the image  with a max_delta of 0.3. This augmentations are reflected in the pipline configuration file `solution/pipeline_new.config`.
+
+Generally, the loss of the modified model is lower that of the original model, this shows that it is performing better. Thus to improve on the model further we should train with additional images with varying brightness and contrast and also converting to gray scale is necessary.
+
+#### setup
+
+We setup this project in a docker environment on a system with NVIDIA GPU capabilities. In my case I leverage a cloud based machine on AWS with.
+
+- Clone the project from this repo
+- Navigate to `build` directory from your terminal (This directory contains the file `Dockerfile.gpu` from which you setup a tensorflow-gpu docker image)
+
+
+https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html
+- install tensorflow `pip3 install tensorflow-gpu==2.3.0`
+- install requirements.txt `pip3 install -r requirements.txt`
+- install object detection api `cp object_detection/packages/tf2/setup.py` .
+`python -m pip install `.
+- git clone https://github.com/waymo-research/waymo-open-dataset.git waymo-od
+- cd waymo-od
+-  git checkout remotes/origin/r1.0
+- ./configure.sh
+- protoc ./waymo_open_dataset/dataset.proto -- python_out=.
+- protoc ./waymo_open_dataset/label.proto -- python_out=.
+
+After ran them, change directory to waymo_open_dataset(master)/waymo_open_dataset
+Now, you can see dataset_pb2.py and label_pb2.py files exist.
+
+install ray
