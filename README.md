@@ -255,7 +255,7 @@ To conclude, the performance for this algorithm is generally poor and will need 
 
 #### Improve on the reference
 
-To improve on this model, The next experimet I ran was with augmetation by adding augmentatinos to the data such as, converting the image to gray scale with a probability of 2%, setting the contrast of the image with a min_delta of 0.6 and a max_delta of 1.0, again, I adjusted the brightness of the image  with a max_delta of 0.3. This augmentations are reflected in the pipline configuration file `solution/pipeline_new.config`.
+To improve on this model, The next experiment I ran was with augmetation by adding augmentatinos to the data such as, converting the image to gray scale with a probability of 2% (model will perform better when images have a uniform color), setting the contrast of the image with a min_delta of 0.6 and a max_delta of 1.0 (altering the contrast of the image will add more data points to improve training), again, I adjusted the brightness of the image  with a max_delta of 0.3 (we slight increase the brightness since most images are dark). This augmentations are reflected in the pipline configuration file `solution/pipeline_new.config`.
 
 I used the configuration to run the notebook `Explore augmentations.ipynb`. I was able to observer its performance on the following images
 
