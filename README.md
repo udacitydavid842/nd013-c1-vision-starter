@@ -33,7 +33,7 @@ experiments/
 
 ### Local Setup
 
-For local setup if you have your own Nvidia GPU, you can use the provided Dockerfile and requirements in the [build directory](./build).
+For local setup if you fhave your own Nvidia GPU, you can use the provided Dockerfile and requirements in the [build directory](./build).
 
 Follow [the README therein](./build/README.md) to create a docker container and install all prerequisites.
 
@@ -177,6 +177,10 @@ pip install --upgrade numpy==1.17
 ```
 apt-get install python3-tk
 ```
+- install seaborn for data visualition
+```
+pip install seaborn
+```
 
 #### File Structure
 ```
@@ -216,11 +220,11 @@ solution/
 
 The provided data contains images with objects (cars, pedestrians, and cyclists) and we have to annotate. We need to properly explore the data such that we can know how to correctly split our data into training and validation sets to minimize the test error bias. 
 
-The dataset contains images with different varitions, images which are clear, images in bad weather consitions, images in the night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestirants - blue and cylist green)
+The dataset contains images with different variations, clear images, images in bad weather conditions, images at night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestrians - blue and cyclist green)
 
-![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.png)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.png)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
+![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.PNG)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.PNG)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
 
-Further analysis on the dataset show that most images contain vehicles and pedestriants, and very few sample images have cyclists in them. The char below shows the districution of classes (cars, predestirians and cyclist ), over a collection of 100 ranom images in the dataset.
+Further analysis of the dataset shows that most images contain vehicles and pedestrians (majority vehicles), and very few sample images have cyclists in them. The chart below shows the distribution of classes (cars, pedestrians, and cyclists), over a collection of 100 random images in the dataset.``        
 
 ![distribution](screenshots/chart.png)
 
@@ -284,3 +288,56 @@ recall with augmentation
 Generally, the loss of the modified model is lower that of the original model, this shows that it is performing better. Thus to improve on the model further we should train with additional images with varying brightness and contrast and also converting to gray scale is necessary.
 
 ![joinned loss](screenshots/joined_loss.JPG)
+The image above shows the combination of the training/validation loss of the experiment without augmentation (experiment1) and the training/validation loss for the experiment with augmentation. 
+
+Finally, we could improve generally by adding more data that has a reasonable amount of cyclist to pedestrians and vehicles ratio so that the training will not be biased to only vehicle objects. Again it is difficult to recognize distant objects thus this will be a challenge as even the human eye can not recognize objects a mile away. Find model inference video [here](./animation.mp4)
+
+### Running Project
+With the project setup as describedin the ***Environment set up*** section above, 
+
+- 1: navigate to the project root folder from your docker container
+- 2: download an process data:
+```
+python download_process.py --data_dir /home/workspace/data/ --temp_dir /home/backups/
+```
+- 3: run all cells on the `Exploratory Data Analysis.ipynb` notebook.
+- 4: create splits of the data for training, validation, and testing:
+```
+- python create_splits.py --data_dir /home/workspace/data/processed/
+```
+- 5: download download the [pretrained model](http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz) and move it to training/pretrained-models/.
+- 6: Edit [pipeline.config](./pipeline.config) file.:
+```
+python edit_config.py --train_dir /home/workspace/data/processed/train/ --eval_dir /home/workspace/data/processed/val/ --batch_size 8 --checkpoint ./training/pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map label_map.pbtxt
+```
+- 7: Run training for non augmentation pipeline:
+```
+python experiments/model_main_tf2.py --model_dir=training/reference/ --pipeline_config_path=training/reference/pipeline_new.config
+```
+- 8: Run validation on a separate terminal just after launch the training:
+```
+CUDA_VISIBLE_DEVICES="" python experiments/model_main_tf2.py --model_dir=training/reference/ --pipeline_config_path=training/reference/pipeline_new.config --checkpoint_dir=training/reference/
+```
+- 9: while training is going on, launch tensorboard from another terminal:
+```
+tensorboard --logdir=training/reference/ --host 0.0.0.0
+```
+- 10: view tensorboard dashboard from your browser:
+```
+localhost:6006
+```
+- 11: when the training/validation is done, kill the terminals
+- move the data in `training/reference` to `training/reference/experiment1`
+- 12: modify the `pipeline_new.config` cereated in step 6 with more augmentations
+![augmented](screenshots/augmentation.JPG)
+- repeat steps 7 and 8
+- 13: move the data in `training/reference` to `training/reference/experiment2` 
+- 14: observe performance on tensorboard
+- 15: save the new model:
+```
+python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/experiment2/pipeline_new.config --trained_checkpoint_dir training/reference/experiment2 --output_directory training/refrence/experiment2/exported_model/
+```
+- create a video of your model's inferences for any tf record file in the test data directory.
+```
+python inference_video.py -labelmap_path label_map.pbtxt --model_path training/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-9758342966297863572_875_230_895_230_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
+```
