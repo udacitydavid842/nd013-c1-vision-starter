@@ -222,7 +222,7 @@ The provided data contains images with objects (cars, pedestrians, and cyclists)
 
 The dataset contains images with different variations, clear images, images in bad weather conditions, images at night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestrians - blue and cyclist green)
 
-![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.PNG)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.PNG)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
+![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.png)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.png)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
 
 Further analysis of the dataset shows that most images contain vehicles and pedestrians (majority vehicles), and very few sample images have cyclists in them. The chart below shows the distribution of classes (cars, pedestrians, and cyclists), over a collection of 100 random images in the dataset.``        
 
@@ -329,6 +329,7 @@ localhost:6006
 - 11: when the training/validation is done, kill the terminals
 - move the data in `training/reference` to `training/reference/experiment1`
 - 12: modify the `pipeline_new.config` cereated in step 6 with more augmentations
+
 ![augmented](screenshots/augmentation.JPG)
 - repeat steps 7 and 8
 - 13: move the data in `training/reference` to `training/reference/experiment2` 
