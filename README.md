@@ -226,6 +226,7 @@ Further analysis of the dataset shows that most images contain vehicles and pede
 
 ![distribution](screenshots/chart.png)
 
+The chart shows that there is an imbalance in the classes as, most of the object in the images taken are vehicles and the least objects found are cyclits.
 We can see these visulizations in the `Exploratory Data Analysis.ipynb` file.
 
 #### Cross validation
