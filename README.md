@@ -218,7 +218,7 @@ The provided data contains images with objects (cars, pedestrians, and cyclists)
 
 The dataset contains images with different varitions, images which are clear, images in bad weather consitions, images in the night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestirants - blue and cylist green)
 
-![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.PNG)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.PNG)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
+![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.png)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.png)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
 
 Further analysis on the dataset show that most images contain vehicles and pedestriants, and very few sample images have cyclists in them. The char below shows the districution of classes (cars, predestirians and cyclist ), over a collection of 100 ranom images in the dataset.
 
