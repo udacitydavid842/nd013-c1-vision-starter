@@ -131,8 +131,6 @@ python inference_video.py -labelmap_path label_map.pbtxt --model_path training/r
 ## Submission Template
 
 ### Project overview
-This section should contain a brief description of the project and what we are trying to achieve. Why is object detection such an important component of self driving car systems?
-
 In this project, we are building a model that would help a self-driving car better predict and detect objects (cars, pedestrians, and cyclists). 
 
 We are made available the [Waymo Open dataset](https://waymo.com/open/) and we use 100 tf record files on which we would develop a model to train on then. Object detection systems are very important for self-driving cars so that they can correctly determine which object surrounds them and make circulation safer.
