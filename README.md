@@ -87,7 +87,7 @@ First, let's download the [pretrained model](http://download.tensorflow.org/mode
 
 Now we need to edit the config files to change the location of the training and validation files, as well as the location of the label_map file, pretrained weights. We also need to adjust the batch size. To do so, run the following:
 ```
-python edit_config.py --train_dir /home/workspace/data/train/ --eval_dir /home/workspace/data/val/ --batch_size 4 --checkpoint ./training/pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map label_map.pbtxt
+python edit_config.py --train_dir /home/workspace/data/processed/train/ --eval_dir /home/workspace/data/processed/val/ --batch_size 4 --checkpoint ./training/pretrained-models/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0 --label_map label_map.pbtxt
 ```
 A new config file has been created, `pipeline_new.config`.
 
@@ -120,12 +120,12 @@ Keep in mind that the following are also available:
 #### Export the trained model
 Modify the arguments of the following function to adjust it to your models:
 ```
-python .\exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/experiment0/pipeline.config --trained_checkpoint_dir training/experiment0/ckpt-50 --output_directory training/experiment0/exported_model/
+python .\exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/reference/experiment2/pipeline.config --trained_checkpoint_dir training/reference/experiment2/ckpt-50 --output_directory training/experiment0/exported_model/
 ```
 
 Finally, you can create a video of your model's inferences for any tf record file. To do so, run the following command (modify it to your files):
 ```
-python inference_video.py -labelmap_path label_map.pbtxt --model_path training/experiment0/exported_model/saved_model --tf_record_path /home/workspace/data/test/tf.record --config_path training/experiment0/pipeline_new.config --output_path animation.mp4
+python inference_video.py -labelmap_path label_map.pbtxt --model_path training/reference/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-9758342966297863572_875_230_895_230_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
 ```
 
 ## Submission Template
@@ -133,66 +133,154 @@ python inference_video.py -labelmap_path label_map.pbtxt --model_path training/e
 ### Project overview
 This section should contain a brief description of the project and what we are trying to achieve. Why is object detection such an important component of self driving car systems?
 
-In this project, we are building a model that would help a self driving car better predict and detect objects (cars, pedestriants and cyclits). 
+In this project, we are building a model that would help a self-driving car better predict and detect objects (cars, pedestrians, and cyclists). 
 
-We are made available the waymo open dataset and we use 100 tf record files on which we would develop a model to train on then. Object detection systems are very important for self driving cars so that they can correctly determine which object surrounds them and make circulation more safe.
+We are made available the [Waymo Open dataset](https://waymo.com/open/) and we use 100 tf record files on which we would develop a model to train on then. Object detection systems are very important for self-driving cars so that they can correctly determine which object surrounds them and make circulation safer.
 
-At the end of this project, we you can create a video of the model's inferences for a tf record file. 
+At the end of this project, we create a [video](./animation.mp4) of the model's inferences for a tf record file `home/workpace/data/processed/test/segment-12027892938363296829_4086_280_4106_280_with_camera_labels.tfrecord`. 
 
 ### Set up
 This section should contain a brief description of the steps to follow to run the code for this repository.
-To set up and run this project, we make sure we use a system equipped with nvidia gpu running with the lastest drivers, install tensorflow-2.3.0-gpu, python 3.6 for the basic setup. 
+To set up and run this project, we make sure we use a system equipped with Nvidia GPU running with the latest drivers, install tensorflow-2.3.0-gpu, python 3.6 for the basic setup. 
+
+#### Environment set up
+Assuming you will be using an Nvidia gpu enabled system,
+
+- We clone this project [repository](https://github.com/udacitydavid842/nd013-c1-vision-starter.git) from github into your local system.
+- Navigagte to the repo's root dir from your terminal.
+- You can use the provided Dockerfile and requirements in the [build directory](./build) to build a docker image.
+- Run the Dockerfile with the command (run this command from the within the [build directory](./build)):
+```
+docker build -t project-dev -f Dockerfile.gpu .
+```
+- Create a docker container to run the created docker image: 
+```
+docker run -v C:\Users\mypc\nd013-c1-vision-starter\:/app/project/ -p 8888:8888 -p 6006:6006 --shm-size=16gb -ti project-dev bash
+```
+- Once in container, you will need to install gsutil, which you can easily do by running:
+```
+curl https://sdk.cloud.google.com | bash
+```
+- Once gsutil is installed and added to your path, you can auth using:
+```
+gcloud auth login
+```
+- We ensure to downgrade/upgrade tensorflow-gpu to version 2.3.0:
+```
+pip3 install tensorflow-gpu==2.3.0
+```
+- The project works with numpy v.1.17
+```
+pip install --upgrade numpy==1.17
+```
+- install python3-tk, which is compactible version for this project
+```
+apt-get install python3-tk
+```
+
+#### File Structure
+```
+/home/backups/
+    - raw: contained the tf records in the Waymo Open format. (NOTE: this folder only contains temporary files and it is emptied after running the download and process [script](./download_process.py) )
+```
+```
+/home/workspace/data/
+    - processed: contained the tf records in the Tf Object detection api format. (NOTE: this folder will contain the train, val, and test data folders after creating the splits)
+```
+```
+/home/workspace/data/processed/
+    - test: contain the test data
+    - train: contain the train data
+    - val: contain the val data
+```
+```
+experiments/
+    - exporter_main_v2.py: to create an inference model
+    - model_main_tf2.py: to launch training
+    - pretrained-models/: contains the checkpoints of the pretrained models.
+```
+```
+training/
+    - reference/
+        - experiment1/...: should contain the pipeline config file and information for the training of the model without augmentation.
+        - experiment2:/...: should contain the pipeline config file with modifications and information for the training of the model with augmentation.
+    - pretrained-model/: should contain the checkpoints of the pretrained models.
+```
+```
+solution/
+    - pipeline_new.config: new config file with modifications
+```
 
 ### Dataset
 #### Dataset analysis
-This section should contain a quantitative and qualitative description of the dataset. It should include images, charts and other visualizations.
 
-The provided data contains images with objects (cars, pedestriants and cyclists) and we have to annotate. We need to properly exploy the data such that we can know how to correctly split our data into training and validation sets so as to mininmize the test error bias. 
+The provided data contains images with objects (cars, pedestrians, and cyclists) and we have to annotate. We need to properly explore the data such that we can know how to correctly split our data into training and validation sets to minimize the test error bias. 
+
+The dataset contains images with different varitions, images which are clear, images in bad weather consitions, images in the night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestirants - blue and cylist green)
+
+![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.PNG)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.PNG)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
+
+Further analysis on the dataset show that most images contain vehicles and pedestriants, and very few sample images have cyclists in them. The char below shows the districution of classes (cars, predestirians and cyclist ), over a collection of 100 ranom images in the dataset.
+
+![distribution](screenshots/chart.png)
+
+We can see these visulizations in the `Exploratory Data Analysis.ipynb` file.
 
 #### Cross validation
-This section should detail the cross validation strategy and justify your approach.
+Here are dataset consists of 100 tfrecord files. We split them up into training, validation, and testing sets. 
 
-Here are dataset consists of 100 tfrecord files. We split them up into training, validation and testing sets. 
-
-We give our training set 75% of the data, 15% for validation and the remainng 10% for testing. This spliting is such that we have enough data for training as well as reserve data for test and validation. Since we have just 100 tfrecord files to deal with we need to minimize the test error and overfitting, thus we use 75% of the data for traning so that we can have 15% for cross validation which is a good number in this case.
+We give our training set 75% of the data, 15% for validation, and the remaining 10% for testing. This splitting is such that we have enough data for training as well as reserve data for test and validation. Since we have just 100 tfrecord files to deal with we need to minimize the test error and overfitting, thus we use 75% of the data for training so that we can have 15% for cross-validation which is a good number in this case.
 
 ### Training 
 #### Reference experiment
-This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
-
 I performed the training over a GPU with 8 cores thus I used a batch size of 8 and validation was run along side the training but over the avalable CPU cores. I first of all ran the training and validation based on the configurations without augmentation of the Restnet50 [pretrained model](http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz) and got the folowing results.
 
-![charts](charts)
+![loss](screenshots/exprt1-loss.JPG)
+training loss
 
+The loss charts as shown in the image above shows that the model is overfitting as the validation loss (in blue) does not generalize well with the training loss (in orange). This is observed as the blue lines are clearly above the orange lines, showing that the error in classifying is high.
+
+![presision](screenshots/exprt1-precision.JPG)
+Precision
+
+![recall](screenshots/exprt1-recall.JPG)
+Recall
+
+We observe from the Databoxes_precision and Databoxes_recall charts above that the values  for precision and recall are low and increases slowly as with increasing training steps. 
+
+To conclude, the performance for this algorithm is generally poor and will need some modifications to improve on the model.
 
 #### Improve on the reference
-This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
 
 To improve on this model, The next experimet I ran was with augmetation by adding augmentatinos to the data such as, converting the image to gray scale with a probability of 2%, setting the contrast of the image with a min_delta of 0.6 and a max_delta of 1.0, again, I adjusted the brightness of the image  with a max_delta of 0.3. This augmentations are reflected in the pipline configuration file `solution/pipeline_new.config`.
 
+I used the configuration to run the notebook `Explore augmentations.ipynb`. I was able to observer its performance on the following images
+
+![gray scale](screenshots/grayscale.PNG)
+Gray scale image
+
+![foggy](screenshots/foggy.PNG)
+Foggy weather
+
+![night](screenshots/night.PNG)
+Night
+
+![bright](screenshots/bright.PNG)
+Bright
+
+![bright](screenshots/contrast.PNG)
+High Contrast
+
+We get the the following charts below after training the model with the new augmentations.
+![loss2](screenshots/exprt2-loss.JPG)
+training loss with augmentation
+
+![presision2](screenshots/exprt2-precision.JPG)
+Precission with augmemtaion
+
+![recall2](screenshots/exprt2-recall.JPG)
+recall with augmentation
+
 Generally, the loss of the modified model is lower that of the original model, this shows that it is performing better. Thus to improve on the model further we should train with additional images with varying brightness and contrast and also converting to gray scale is necessary.
 
-#### setup
-
-We setup this project in a docker environment on a system with NVIDIA GPU capabilities. In my case I leverage a cloud based machine on AWS with.
-
-- Clone the project from this repo
-- Navigate to `build` directory from your terminal (This directory contains the file `Dockerfile.gpu` from which you setup a tensorflow-gpu docker image)
-
-
-https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html
-- install tensorflow `pip3 install tensorflow-gpu==2.3.0`
-- install requirements.txt `pip3 install -r requirements.txt`
-- install object detection api `cp object_detection/packages/tf2/setup.py` .
-`python -m pip install `.
-- git clone https://github.com/waymo-research/waymo-open-dataset.git waymo-od
-- cd waymo-od
--  git checkout remotes/origin/r1.0
-- ./configure.sh
-- protoc ./waymo_open_dataset/dataset.proto -- python_out=.
-- protoc ./waymo_open_dataset/label.proto -- python_out=.
-
-After ran them, change directory to waymo_open_dataset(master)/waymo_open_dataset
-Now, you can see dataset_pb2.py and label_pb2.py files exist.
-
-install ray
+![joinned loss](screenshots/joined_loss.JPG)
