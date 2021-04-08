@@ -258,19 +258,19 @@ To improve on this model, The next experimet I ran was with augmetation by addin
 
 I used the configuration to run the notebook `Explore augmentations.ipynb`. I was able to observer its performance on the following images
 
-![gray scale](screenshots/grayscale.PNG)
+![gray scale](screenshots/grayscale.png)
 Gray scale image
 
-![foggy](screenshots/foggy.PNG)
+![foggy](screenshots/foggy.png)
 Foggy weather
 
-![night](screenshots/night.PNG)
+![night](screenshots/night.png)
 Night
 
-![bright](screenshots/bright.PNG)
+![bright](screenshots/bright.png)
 Bright
 
-![bright](screenshots/contrast.PNG)
+![bright](screenshots/contrast.png)
 High Contrast
 
 We get the the following charts below after training the model with the new augmentations.
