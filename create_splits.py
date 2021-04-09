@@ -20,6 +20,8 @@ def split(data_dir):
     # get data file names from data_dir path
     files = [filename for filename in glob.glob(f'{data_dir}/*.tfrecord')]
     
+    np.random.shuffle(files)
+    
     # spliting file names
     train_files, val_file, test_file = np.split(files, [int(.75*len(files)), int(.9*len(files))])
     
