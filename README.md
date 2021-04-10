@@ -243,7 +243,7 @@ Here we observer about out of the 20000 images, above 15000 images have at least
 
 Here we observer that about out of the 20000 images, about 5000 images have at least 10 pedestrians present in them. over 10000 images have at least 1 pedestrian.
 
-***Distribution of Cyclyts***
+***Distribution of Cyclits***
 
 ![cyclits distribution](screenshots/cyc_dist.png)
 
