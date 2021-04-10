@@ -250,7 +250,7 @@ Here we observer that about out of the 20000 images, about 5000 images have at l
 Here we observer there are very few cyclists presnt in images. The msmximum number of cyclits present in an image is just 6 and only about 2400 images have at least 1 cyclit present in them. 
 
 #### Cross validation
-Here are dataset consists of 100 tfrecord files. We split them up into training, validation, and testing sets. 
+Here are dataset consists of 100 tfrecord files. We split them up into training, validation, and testing sets.  We make a random shuffle of the data and split them up into training, validation, and testing sets. We use a random shuffle of the data before splitting to increases the probability of all classes being present in each split. 
 
 We give our training set 75% of the data, 15% for validation, and the remaining 10% for testing. This splitting is such that we have enough data for training as well as reserve data for test and validation. Since we have just 100 tfrecord files to deal with we need to minimize the test error and overfitting, thus we use 75% of the data for training so that we can have 15% for cross-validation which is a good number in this case.
 
