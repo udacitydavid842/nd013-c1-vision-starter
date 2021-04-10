@@ -125,7 +125,7 @@ python .\exporter_main_v2.py --input_type image_tensor --pipeline_config_path tr
 
 Finally, you can create a video of your model's inferences for any tf record file. To do so, run the following command (modify it to your files):
 ```
-python inference_video.py -labelmap_path label_map.pbtxt --model_path training/reference/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-9758342966297863572_875_230_895_230_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
+python inference_video.py --labelmap_path label_map.pbtxt --model_path training/reference/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-10094743350625019937_3420_000_3440_000_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
 ```
 
 ## Submission Template
@@ -218,16 +218,36 @@ solution/
 
 The provided data contains images with objects (cars, pedestrians, and cyclists) and we have to annotate. We need to properly explore the data such that we can know how to correctly split our data into training and validation sets to minimize the test error bias. 
 
-The dataset contains images with different variations, clear images, images in bad weather conditions, images at night, images with distant objects, etc... Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestrians - blue and cyclist green)
+Images are taken in various environments such as; freeway, city, suburb etc. Also, the data set contains images taken in different weather conditions; day/night/foggy etc. Again, the vehicle class englobes cars / buses etc. Below are a few images we plot with colored bounding boxes around objects such as (vehicles - red, pedestrians - blue and cyclist green)
 
 ![img1](screenshots/img1.png)![img2](screenshots/img2.png)![img3](screenshots/img3.png)![img4](screenshots/img4.png)![img5](screenshots/img5.png)![img6](screenshots/img6.png)![img7](screenshots/img7.png)![img8](screenshots/img8.png)![img9](screenshots/img9.png)![img10](screenshots/img10.png)
 
-Further analysis of the dataset shows that most images contain vehicles and pedestrians (majority vehicles), and very few sample images have cyclists in them. The chart below shows the distribution of classes (cars, pedestrians, and cyclists), over a collection of 100 random images in the dataset.``        
+Further analysis of the dataset shows that most images contain vehicles and pedestrians (majority vehicles), and very few sample images have cyclists in them. The chart below shows a bar plot for the distribution of classes (cars, pedestrians, and cyclists), over a collection of 20000 random images in the dataset.        
 
 ![distribution](screenshots/chart.png)
 
 The chart shows that there is an imbalance in the classes as, most of the object in the images taken are vehicles and the least objects found are cyclits.
 We can see these visulizations in the `Exploratory Data Analysis.ipynb` file.
+
+Below are histogram charts of the distribution of vehicls/cars, pedestrians and, cyclits in 20000
+
+***Distribution of Cars***
+
+![car distribution](screenshots/cars_dist.png)
+
+Here we observer about out of the 20000 images, above 15000 images have at least 10 vehicles present in them and the also the maximum number of vehicles present in an object is about 67.
+
+***Distribution of Pedestrians***
+
+![pedestrians distribution](screenshots/peds_dist.png)
+
+Here we observer that about out of the 20000 images, about 5000 images have at least 10 pedestrians present in them. over 10000 images have at least 1 pedestrian.
+
+***Distribution of Cyclyts***
+
+![cyclits distribution](screenshots/cyc_dist.png)
+
+Here we observer there are very few cyclists presnt in images. The msmximum number of cyclits present in an image is just 6 and only about 2400 images have at least 1 cyclit present in them. 
 
 #### Cross validation
 Here are dataset consists of 100 tfrecord files. We split them up into training, validation, and testing sets. 
@@ -335,9 +355,9 @@ localhost:6006
 - 14: observe performance on tensorboard
 - 15: save the new model:
 ```
-python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/experiment2/pipeline_new.config --trained_checkpoint_dir training/reference/experiment2 --output_directory training/refrence/experiment2/exported_model/
+python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path training/experiment2/pipeline_new.config --trained_checkpoint_dir training/reference/experiment2 --output_directory training/reference/experiment2/exported_model/
 ```
 - create a video of your model's inferences for any tf record file in the test data directory.
 ```
-python inference_video.py -labelmap_path label_map.pbtxt --model_path training/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-9758342966297863572_875_230_895_230_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
+python inference_video.py --labelmap_path label_map.pbtxt --model_path training/experiment2/exported_model/saved_model --tf_record_path /home/workspace/data/processed/test/segment-10094743350625019937_3420_000_3440_000_with_camera_labels.tfrecord --config_path training/reference/experiment2/pipeline_new.config --output_path animation.mp4
 ```
